@@ -1,0 +1,8 @@
+target/
+logs/
+.cluster_pids
+*.tmp
+.DS_Store
+.idea/
+*.iml
+.vscode/
