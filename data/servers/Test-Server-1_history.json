@@ -1,11 +1,11 @@
 [
   {
-    "recordId": "REC-S-1788368247334",
-    "timestamp": "2026-09-02T16:57:27.334327Z",
+    "recordId": "REC-S-1789139682213",
+    "timestamp": "2026-09-11T15:14:42.213729Z",
     "entityRole": "SERVER",
     "entityId": "Test-Server-1",
     "eventType": "CALCULATION_PROCESSED",
-    "txId": "TX-6770af7f",
+    "txId": "TX-eb088ea9",
     "originClientId": "Test-Client-1",
     "responderServerId": "Test-Server-1",
     "operation": "ADD",
@@ -16,12 +16,12 @@
     "notes": "Operación procesada exitosamente en Test-Server-1"
   },
   {
-    "recordId": "REC-S-1788368247347",
-    "timestamp": "2026-09-02T16:57:27.347832Z",
+    "recordId": "REC-S-1789139682246",
+    "timestamp": "2026-09-11T15:14:42.246831Z",
     "entityRole": "SERVER",
     "entityId": "Test-Server-1",
     "eventType": "CALCULATION_PROCESSED",
-    "txId": "TX-90a87263",
+    "txId": "TX-8166f3d5",
     "originClientId": "Test-Client-1",
     "responderServerId": "Test-Server-1",
     "operation": "SUBTRACT",
@@ -32,12 +32,12 @@
     "notes": "Operación procesada exitosamente en Test-Server-1"
   },
   {
-    "recordId": "REC-S-1788368247353",
-    "timestamp": "2026-09-02T16:57:27.353597Z",
+    "recordId": "REC-S-1789139682274",
+    "timestamp": "2026-09-11T15:14:42.274192Z",
     "entityRole": "SERVER",
     "entityId": "Test-Server-1",
     "eventType": "CALCULATION_PROCESSED",
-    "txId": "TX-8376564e",
+    "txId": "TX-642cbf7d",
     "originClientId": "Test-Client-2",
     "responderServerId": "Test-Server-1",
     "operation": "MULTIPLY",
@@ -48,12 +48,28 @@
     "notes": "Operación procesada exitosamente en Test-Server-1"
   },
   {
-    "recordId": "REC-S-1788368247362",
-    "timestamp": "2026-09-02T16:57:27.362218Z",
+    "recordId": "REC-S-1789139682299",
+    "timestamp": "2026-09-11T15:14:42.299473Z",
     "entityRole": "SERVER",
     "entityId": "Test-Server-1",
     "eventType": "CALCULATION_PROCESSED",
-    "txId": "TX-a134b7f9",
+    "txId": "TX-75c3837b",
+    "originClientId": "Test-Client-1",
+    "responderServerId": "Test-Server-1",
+    "operation": "DIVIDE",
+    "operandA": 100.0,
+    "operandB": 4.0,
+    "result": 25.0,
+    "status": "SUCCESS",
+    "notes": "Operación procesada exitosamente en Test-Server-1"
+  },
+  {
+    "recordId": "REC-S-1789139682326",
+    "timestamp": "2026-09-11T15:14:42.326048Z",
+    "entityRole": "SERVER",
+    "entityId": "Test-Server-1",
+    "eventType": "CALCULATION_PROCESSED",
+    "txId": "TX-d802943e",
     "originClientId": "Test-Client-1",
     "responderServerId": "Test-Server-1",
     "operation": "DIVIDE",
@@ -61,5 +77,21 @@
     "operandB": 0.0,
     "status": "ERROR_DIVISION_BY_ZERO",
     "notes": "Error aritmético: División entre cero no permitida"
+  },
+  {
+    "recordId": "REC-S-1789139682350",
+    "timestamp": "2026-09-11T15:14:42.350375Z",
+    "entityRole": "SERVER",
+    "entityId": "Test-Server-1",
+    "eventType": "CALCULATION_PROCESSED",
+    "txId": "TX-5bd5f0c3",
+    "originClientId": "Test-Client-1",
+    "responderServerId": "Test-Server-1",
+    "operation": "ADD",
+    "operandA": 1.0,
+    "operandB": 1.0,
+    "result": 2.0,
+    "status": "SUCCESS",
+    "notes": "Operación procesada exitosamente en Test-Server-1"
   }
 ]
