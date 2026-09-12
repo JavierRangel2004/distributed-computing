@@ -22,19 +22,19 @@ El sistema desacopla estrictamente:
 
 ```mermaid
 graph TD
-    subgraph Capa 1: Clientes Pesados (Desktop GUI)
+    subgraph L1["Capa 1: Clientes Pesados (Desktop GUI)"]
         C1["Cliente Pesado 1 (Client-1)"]
         C2["Cliente Pesado 2 (Client-2)"]
     end
 
-    subgraph Capa 2: Middleware (TCP Port 5000)
+    subgraph L2["Capa 2: Middleware (TCP Port 5000)"]
         M_ACCEPT["Socket Listener Thread (ServerSocket)"]
         M_REG["Registro Concurrente de Conexiones"]
         M_ROUTE["Enrutador de Difusión Bidireccional"]
         M_ACCEPT --> M_REG --> M_ROUTE
     end
 
-    subgraph Capa 3: Servidores de Lógica y Persistencia
+    subgraph L3["Capa 3: Servidores de Lógica y Persistencia"]
         S1["Servidor de Cálculo 1 (Server-1)<br/>ALU + data/servers/Server-1_history.json"]
         S2["Servidor de Cálculo 2 (Server-2)<br/>ALU + data/servers/Server-2_history.json"]
     end
