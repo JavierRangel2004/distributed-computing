@@ -5,6 +5,8 @@
 **Profesor:** Dr. Carlos Pérez Leguízamo  
 **Estudiante:** Javier Rangel  
 
+
+> ℹ️ **Nota sobre prácticas de clase:** La carpeta `practicas-curso/` contiene ejercicios y talleres prácticos de aula (ej. mallas P2P en Python). No está relacionada con el proyecto general de la Calculadora de Tres Capas ni debe considerarse para la evaluación del mismo.
 ---
 
 ## 📋 Descripción del Proyecto
