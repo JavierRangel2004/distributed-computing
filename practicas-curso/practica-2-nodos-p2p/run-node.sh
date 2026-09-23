@@ -22,7 +22,7 @@ echo "🌐 Todas las IPs locales disponibles: $ALL_IPS"
 echo "------------------------------------------------------------"
 echo "💡 Cuando te conectes al módem del profesor (GLSPT 1200):"
 echo "   - Tu IP será algo como 192.168.8.X"
-echo "   - El nodo del profesor suele estar en 192.168.8.1:8070"
+echo "   - El nodo del profesor está en: 192.168.8.241:8070"
 echo "   - Para conectar con otro equipo usa: /conectar 192.168.8.Y:8070"
 echo "============================================================"
 
