@@ -24,6 +24,14 @@ class ACP:
         self.intereses = set(intereses_iniciales) if intereses_iniciales else {TEMPERATURA}
         self.mensajes_vistos = set()
         self.fn_enviar_a_todos = None  # Se inyecta desde el módulo cliente
+        self.stats = {
+            "RX": 0,
+            "USE": 0,
+            "IGNORE": 0,
+            "TX": 0,
+            "FWD": 0,
+            "DROP": 0,
+        }
 
     def set_emisor(self, fn_enviar):
         """Inyecta la función de transporte de red para difusión en la malla."""
@@ -39,6 +47,12 @@ class ACP:
         self.intereses.discard(content_code.upper())
         registrar_evento("SYS", f"Interés removido: {content_code.upper()}")
 
+
+    def registrar_metrica(self, tag, detalle):
+        """Registra en bitácora y actualiza el contador de métricas."""
+        if tag in self.stats:
+            self.stats[tag] += 1
+        registrar_evento(tag, detalle)
     def procesar_paquete_red(self, raw_str, addr):
         """
         Punto de entrada para paquetes TCP que entran desde la malla.
@@ -47,7 +61,7 @@ class ACP:
         try:
             paquete = json.loads(raw_str)
         except json.JSONDecodeError:
-            registrar_evento("DROP", f"Mensaje corrupto / no JSON desde {addr[0]}")
+            self.registrar_metrica("DROP", f"Mensaje corrupto / no JSON desde {addr[0]}")
             return
 
         tipo = paquete.get("type")
@@ -56,7 +70,7 @@ class ACP:
         # 1. Filtro anti-bucles: si ya vimos este ID, descartamos inmediatamente
         if msg_id:
             if msg_id in self.mensajes_vistos:
-                registrar_evento("DROP", f"Descarte por duplicado: {msg_id}")
+                self.registrar_metrica("DROP", f"Descarte por duplicado: {msg_id}")
                 return
             self.mensajes_vistos.add(msg_id)
 
@@ -64,12 +78,12 @@ class ACP:
         if tipo == "HELLO":
             origen = paquete.get("node_id", "Anónimo")
             print(f"\n[👋 SALUDO] El nodo '{origen}' ({addr[0]}) se ha conectado.")
-            registrar_evento("RX", f"HELLO recibido de {origen} ({addr[0]})")
+            self.registrar_metrica("RX", f"HELLO recibido de {origen} ({addr[0]})")
             return
 
         if tipo == "PING":
             origen = paquete.get("node_id", "Anónimo")
-            registrar_evento("RX", f"PING recibido de {origen}")
+            self.registrar_metrica("RX", f"PING recibido de {origen}")
             # Retransmitir PING por la malla
             if self.fn_enviar_a_todos:
                 self.fn_enviar_a_todos(paquete)
@@ -81,12 +95,12 @@ class ACP:
             data = paquete.get("data")
             origin = paquete.get("origin", "Desconocido")
 
-            registrar_evento("RX", f"Recibido {content_code}={data} de {origin} (id: {msg_id})")
+            self.registrar_metrica("RX", f"Recibido {content_code}={data} de {origin} (id: {msg_id})")
 
             # Evaluación de Intereses del Subsistema
             if content_code in self.intereses:
                 print(f"\n[🎯 ACP USE] Coincide interés '{content_code}' de '{origin}': {data}")
-                registrar_evento("USE", f"Entregando a ASM -> {content_code}: {data}")
+                self.registrar_metrica("USE", f"Entregando a ASM -> {content_code}: {data}")
 
                 # Entrega de datos filtrados al ASM ("ASM piensa y actúa")
                 resultado_asm = self.asm.procesar(paquete)
@@ -97,17 +111,17 @@ class ACP:
                     self.publicar_contenido(nuevo_codigo, nuevo_valor)
             else:
                 print(f"\n[🙈 ACP IGNORE] '{content_code}' ignorado localmente (no está en {list(self.intereses)}).")
-                registrar_evento("IGNORE", f"Descartado para ASM local: {content_code} de {origin}")
+                self.registrar_metrica("IGNORE", f"Descartado para ASM local: {content_code} de {origin}")
 
             # Reenvío Gossip: aunque a este nodo no le interese, los demás nodos
             # de la malla podrían necesitarlo (cooperación descentralizada)
             if self.fn_enviar_a_todos:
-                registrar_evento("FWD", f"Retransmitiendo {content_code} (id: {msg_id}) a la malla")
+                self.registrar_metrica("FWD", f"Retransmitiendo {content_code} (id: {msg_id}) a la malla")
                 self.fn_enviar_a_todos(paquete)
             return
 
         # Otros mensajes
-        registrar_evento("DROP", f"Tipo de paquete desconocido: {tipo}")
+        self.registrar_metrica("DROP", f"Tipo de paquete desconocido: {tipo}")
 
     def publicar_contenido(self, content_code, data):
         """
@@ -125,7 +139,7 @@ class ACP:
         }
 
         print(f"\n[🚀 ACP TX] Publicando a la malla: {content_code} = {data} (id: {msg_id})")
-        registrar_evento("TX", f"Difundiendo {content_code}={data} (id: {msg_id})")
+        self.registrar_metrica("TX", f"Difundiendo {content_code}={data} (id: {msg_id})")
 
         if self.fn_enviar_a_todos:
             self.fn_enviar_a_todos(paquete)
@@ -135,7 +149,7 @@ class ACP:
         # Loopback local: si lo publicado coincide con nuestros intereses,
         # también lo entregamos al ASM local para evaluar la reacción
         if content_code in self.intereses:
-            registrar_evento("USE", f"Loopback local para ASM -> {content_code}: {data}")
+            self.registrar_metrica("USE", f"Loopback local para ASM -> {content_code}: {data}")
             resultado_asm = self.asm.procesar(paquete)
             if resultado_asm:
                 reac_code, reac_val = resultado_asm
