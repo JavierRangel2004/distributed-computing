@@ -1,0 +1,8 @@
+Lib/
+Include/
+__pycache__/
+*.py[cod]
+logs/*.log
+dist/
+build/
+*.exe

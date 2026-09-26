@@ -1,0 +1,7 @@
+{
+    "node_id": "AIRE_EQUIPO_03",
+    "nodos": ["127.0.0.1:8070"],
+    "intereses": ["TEMPERATURA"],
+    "intervalo_segundos": 3,
+    "tipo": "aire"
+}

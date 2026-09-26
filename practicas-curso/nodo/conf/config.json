@@ -1,0 +1,7 @@
+{
+    "node_id": "EQUIPO_03",
+    "host": "0.0.0.0",
+    "port": 8070,
+    "api_host": "0.0.0.0",
+    "api_port": 9070
+}
