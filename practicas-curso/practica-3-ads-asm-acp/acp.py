@@ -131,3 +131,12 @@ class ACP:
             self.fn_enviar_a_todos(paquete)
         else:
             print("[!] Advertencia: No hay función de envío configurada en el ACP.")
+
+        # Loopback local: si lo publicado coincide con nuestros intereses,
+        # también lo entregamos al ASM local para evaluar la reacción
+        if content_code in self.intereses:
+            registrar_evento("USE", f"Loopback local para ASM -> {content_code}: {data}")
+            resultado_asm = self.asm.procesar(paquete)
+            if resultado_asm:
+                reac_code, reac_val = resultado_asm
+                self.publicar_contenido(reac_code, reac_val)
