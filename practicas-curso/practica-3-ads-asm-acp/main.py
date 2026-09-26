@@ -21,6 +21,12 @@ from server import iniciar_servidor, set_acp
 from client import conectar_a_peer, enviar_mensaje_a_todos, conexiones_salientes
 from logger import registrar_evento
 import peers
+from discovery import (
+    escanear_y_conectar_malla,
+    hilo_autodescubrimiento_periodico,
+    detectar_prefijo_subred,
+)
+import discovery
 
 CONFIG_FILE = os.path.join("conf", "config.json")
 CONNECTIONS_FILE = os.path.join("conf", "connections.json")
@@ -79,6 +85,8 @@ def imprimir_ayuda():
   /estado                      -> Muestra el estado interno del ASM (ON/OFF, umbrales)
   /umbral <VALOR>              -> Modifica el umbral de disparo del Aire Acondicionado
   /peers                       -> Lista conexiones activas con otros nodos
+  /descubrir | /escanear       -> Escanea la subred y se conecta automáticamente a todos los peers activos
+  /autodescubrir [on|off]      -> Activa/desactiva el escaneo periódico automático en segundo plano
   /conectar IP:PUERTO          -> Conecta manualmente con otro nodo
   /catalogo                    -> Lista todos los Content Codes oficiales de la práctica
   /ayuda                       -> Muestra esta ayuda
@@ -133,6 +141,21 @@ if __name__ == "__main__":
             conectar_a_peer(p_ip, p_puerto, node_id)
         except Exception:
             pass
+
+    # 4. Lanzar hilo de autodescubrimiento periódico en segundo plano (cada 15s)
+    hilo_discovery = threading.Thread(
+        target=hilo_autodescubrimiento_periodico,
+        args=(node_id, 8070, conectar_a_peer, 15),
+        daemon=True,
+    )
+    hilo_discovery.start()
+
+    # Escaneo inicial rápido en segundo plano
+    threading.Thread(
+        target=escanear_y_conectar_malla,
+        args=(node_id, 8070, conectar_a_peer, False),
+        daemon=True,
+    ).start()
 
     print("\nEscribe /ayuda para ver los comandos interactivos.")
     print("ads> ", end="", flush=True)
@@ -229,6 +252,25 @@ if __name__ == "__main__":
                         print("[!] Uso: /conectar IP:PUERTO")
                 else:
                     print("[!] Uso: /conectar IP:PUERTO")
+                print("ads> ", end="", flush=True)
+
+            elif cmd in ["/descubrir", "/escanear"]:
+                threading.Thread(
+                    target=escanear_y_conectar_malla,
+                    args=(node_id, 8070, conectar_a_peer, True),
+                    daemon=True,
+                ).start()
+
+            elif cmd == "/autodescubrir":
+                if len(partes) > 1 and partes[1].lower() in ["off", "0", "false", "no"]:
+                    discovery.auto_scan_activo = False
+                    print("[*] Autodescubrimiento automático en segundo plano DESACTIVADO.")
+                elif len(partes) > 1 and partes[1].lower() in ["on", "1", "true", "si"]:
+                    discovery.auto_scan_activo = True
+                    print("[*] Autodescubrimiento automático en segundo plano ACTIVADO (cada 15s).")
+                else:
+                    st = "ACTIVADO" if discovery.auto_scan_activo else "DESACTIVADO"
+                    print(f"[*] Autodescubrimiento: {st}. Usa '/autodescubrir on' o '/autodescubrir off'")
                 print("ads> ", end="", flush=True)
 
             else:
