@@ -9,12 +9,22 @@
     <version>1.0.0</version>
     <packaging>jar</packaging>
 
-    <name>Calculadora Distribuida 3 Capas</name>
+    <!--
+        Proyecto Parcial 2 - Arquitectura ADS (Campo de Datos en malla completa).
+        Manifest principal: mx.edu.up.computing.ads.NodeMain.
+        El parcial 1 (calculadora 3 capas) se conserva como entregable histórico;
+        su main sigue disponible ejecutando:
+            java -cp target/distributed-computing-1.0.0-jar-with-dependencies.jar \
+                 mx.edu.up.computing.middleware.MiddlewareMain
+    -->
+    <name>Calculadora Distribuida ADS</name>
     <description>
-        Sistema distribuido de calculadora aritmética de tres capas implementado sobre
-        sockets TCP puros en Java. Cumple con la separación de responsabilidades entre
-        clientes pesados gráficos, middleware de enrutamiento y servidores de cálculo
-        redundantes con persistencia en disco.
+        Sistema distribuido ADS (Autonomous Decentralized Systems) para el parcial 2:
+        nodos iguales en malla completa con broadcast por contenido, células GUI y
+        servidor configurables por servicio (SUM/SUB/MUL/DIV), Códigos de Contenido
+        *_REQ/*_RES, deduplicación atómica por messageId, anuncios periódicos con
+        lease y selección de ejecutor único por UUID de instancia. Sin coordinador
+        central; los historiales ADS viven en data/ads/.
     </description>
 
     <properties>
@@ -72,7 +82,11 @@
                     </descriptorRefs>
                     <archive>
                         <manifest>
-                            <mainClass>mx.edu.up.computing.middleware.MiddlewareMain</mainClass>
+                            <!--
+                                Main activo: nodo ADS. El parcial 1 sigue disponible
+                                invocando explícitamente su middleware.
+                            -->
+                            <mainClass>mx.edu.up.computing.ads.NodeMain</mainClass>
                         </manifest>
                     </archive>
                 </configuration>
@@ -92,6 +106,13 @@
                 <groupId>org.codehaus.mojo</groupId>
                 <artifactId>exec-maven-plugin</artifactId>
                 <version>3.4.1</version>
+            </plugin>
+
+            <!-- Pruebas JUnit 5 -->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-surefire-plugin</artifactId>
+                <version>3.2.5</version>
             </plugin>
         </plugins>
     </build>
